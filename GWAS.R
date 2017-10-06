@@ -7,7 +7,7 @@ wanted_disease <-  c("Crohn's disease")
 
 #Started with 24455 rows of data from the original GWAS table, we first eliminated associations annotated as not replicated by filtering out all NA values in “replication sample description” column. Then we discarded the data with p-value greater than 10-7. After that, we also filtered out anthropometric traits, referred from the paper’s supplementary table 1, since they are not related to drugs discovery. The function used for this last step is called anti_join from dplyr package.
 
-After this step, we ended up with 3907 rows of data.
+#After this step, we ended up with 3907 rows of data.
 GWAS<-read_tsv('gwas_catalog.tsv')
 GWAS1<-filter(GWAS, GWAS$'REPLICATION SAMPLE DESCRIPTION'!="NA")
 GWAS2<-filter(GWAS1,GWAS1$'P-VALUE'<=(10^(-7)),header=TRUE)
@@ -16,7 +16,7 @@ GWAS3<- anti_join(GWAS2,anth_traits,by=c("DISEASE/TRAIT"="GWAS.Disease.Trait"))
 
 #The next step is to match gene names in our current table with the recognizable HUGO gene names. The function used in this step is called semi_join form dplyr package.
 
-After this step, we ended up with 2328 unique genes.
+#After this step, we ended up with 2328 unique genes.
 Hugo_names <-read.csv('genes.csv',sep='\t', header=FALSE)
 colnames(Hugo_names)='Approved.Symbol'
 GWAS3_split <- strsplit(GWAS3$`REPORTED GENE(S)`,",")
@@ -26,7 +26,7 @@ match_Hugo <- semi_join(Genes_table,Hugo_names,by=c("Genes"="Approved.Symbol"))
 
 #Next, we obtained a drug-gene-interaction table from DGIdb. This table provides information of drugs that correspond to each gene. Among all the genes in this table, we are only interested in ones that are in our filtered GWAS table, so we filtered the rest out.
 
-After this step, we ended up with 671 unique genes that correspond to 5772 drugs.
+#After this step, we ended up with 671 unique genes that correspond to 5772 drugs.
 Drug_Gene <- read.table('Drug_Gene_table.txt',sep='\t',header=TRUE)
 match_DrugGene <- semi_join(Drug_Gene,match_Hugo,by=c("entrez_gene_symbol"="Genes"))
 
